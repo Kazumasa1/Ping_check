@@ -1,5 +1,3 @@
-server = ""
-client = ""
 # inputされたIPアドレスとサブネットマスクを配列に格納する処理
 def house_arr(server,client):
   server_arr = server.split(' ')
@@ -16,9 +14,17 @@ def house_arr(server,client):
 
   return server_ip_arr, server_sub_arr, client_ip_arr, client_sub_arr
 
-class SubnetError():
+
+
+# 入力されたIPアドレスとサブネットマスクが無効の場合の例外処理
+class IPError(Exception):
+    pass
+class SubnetError(Exception):
     pass
 
+
+
+# 有効なIPアドレスとサブネットマスクが入力されるまでループ
 input_check = False
 while not input_check:
     try:
@@ -47,6 +53,12 @@ while not input_check:
         i = 0
         while i <= 3:
 
+            # 入力されたIPアドレスは有効か？
+            if ( 0 <= int(server_ip_arr[i])) and ( int(server_ip_arr[i]) <= 255 ):
+                pass
+            else:
+                raise IPError()
+
             # IPアドレスをビット演算（XOR）で比較
             ip_comp = int(server_ip_arr[i]) ^ int(client_ip_arr[i])
 
@@ -65,11 +77,10 @@ while not input_check:
         equal_ip = ip_comp_bin.find('1')
 
         # 入力されたサブネットマスクは有効か？
-        sub_check = False
         if 1 <= server_sub and server_sub <= 32:
-            sub_check = True
+            pass
         else:
-            sub_check = False
+            raise SubnetError()
         
 
 
@@ -77,28 +88,33 @@ while not input_check:
         # 疎通確認処理
 
         # IPアドレスのネットワーク部は共通　かつ　サブネットマスクは正しいか？
-        if (equal_ip >= server_sub) and (equal_ip >= client_sub) and sub_check:
-                print("\n\n\033[33mPingが通ります！！！\033[0m\n")
-
+        if (equal_ip >= server_sub) and (equal_ip >= client_sub):
+            print("\n\n\033[33mPingが通ります！！！\033[0m\n")
+        elif equal_ip == -1:
+            print("\n\n\033[33mPingが通ります！！！\033[0m\n")
         else:
             print("\n\n\033[31mPingが通りません！！！\033[0m\n")
-            
-            if (int(server_sub) == 0) or (int(client_sub) == 0) :
-                print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n") 
-            elif (int(server_sub) > 32) or (int(client_sub) > 30) :
-                print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n")
-            else:
-                print("\n\n\033[31mネットワークが違います。\033[0m\n")
+            print("\n\n\033[31mネットワークが違います。\033[0m\n")
                 
-
         input_check = True
 
+
+    # -------------------------例外処理-------------------------
     except ValueError:
         print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
         input_check = False
     except IndexError:
         print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
         input_check = False
+    except SubnetError:
+        print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
+        print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n")
+        input_check = False
+    except IPError:
+        print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
+        print("\n\n\033[31mIPアドレスが無効です。\033[0m\n")
+        input_check = False
+
 
 # 補足情報表示
 print("\n")
