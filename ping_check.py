@@ -27,68 +27,54 @@ server_sub_arr = house_arr(server,client)[1]
 client_ip_arr = house_arr(server,client)[2]
 client_sub_arr = house_arr(server,client)[3]
 
-# print(server_ip_arr)
-# print(server_sub_arr)
-# print(client_ip_arr)
-# print(client_sub_arr)
-
-if int(server_ip_arr[0]) <= 127:
-  print("サーバ側はクラスAのIPアドレスです")
-
-elif int(server_ip_arr[0]) <= 191:
-  print("サーバ側はクラスBのIPアドレスです")
-
-elif int(server_ip_arr[0]) <= 223:
-  print("サーバ側はクラスCのIPアドレスです")
-
-elif int(224 < server_ip_arr[0]):
-  print("サーバ側はクラスC以上のIPアドレスです")
-
 # サブネットマスクを二進数に変換
 i = 0
 server_sub_bin = ""
 client_sub_bin = ""
+server_ip_bin = ""
+client_ip_bin = ""
 
-ip_comp_arr = ""
+ip_comp_bin = ""
 while i <= 3:
     server_sub_bin += format(int(server_sub_arr[i]),'08b')
     client_sub_bin += format(int(client_sub_arr[i]),'08b')
-    # server_sub_bin += bin(int(server_sub_arr[i]))
-    # client_sub_bin += bin(int(client_sub_arr[i]))
-
-    print(int(server_ip_arr[i]) ^ int(client_ip_arr[i]))
 
     # IPアドレスをビット演算で比較
+    server_ip_bin += format(int(server_ip_arr[i]),'08b')
+    client_ip_bin += format(int(client_ip_arr[i]),'08b')
     ip_comp = int(server_ip_arr[i]) ^ int(client_ip_arr[i])
 
-    if 0 == (int(server_ip_arr[i]) ^ int(client_ip_arr[i])):
-        ip_comp_arr += format(ip_comp,'08b')
-        print("ok")
-    else:
-        ip_comp_arr += format(ip_comp,'08b')
-        print("ng")
-        print(ip_comp)
-        
-
-        print(format(ip_comp,'08b'))
-        # print('{0:08d}'.format(str(bin(ip_comp))))
-        # print('{0:08d}'.format(str(bin(ip_comp))).find('1'))
+    ip_comp_bin += format(ip_comp,'08b')
     i += 1
 
 
-print(ip_comp_arr)
-print(server_sub_bin)
-print(client_sub_bin)
-print(server_sub_bin.count('1'))
-print(client_sub_bin.count('1'))
+print(ip_comp)
+
+equal_ip = ip_comp_bin.find('1')
+server_sub = server_sub_bin.find('0')
+client_sub = client_sub_bin.find('0')
+
+print("\n")
+print("IPアドレスは先頭から{}番目まで等しいです。".format(ip_comp_bin.find('1')))
+print("サーバのサブネットマスクは{}です。".format(server_sub_bin.find('0')))
+print("クライアントのサブネットマスクは{}です。".format(client_sub_bin.find('0')))
+
+print("\n")
+
+print("サーバ側のIPアドレス\t\t\t：{}".format(server_ip_bin))
+print("クライアント側のIPアドレス\t\t：{}".format(client_ip_bin))
+print("サーバ側のサブネットマスク\t\t：{}".format(server_sub_bin))
+print("クライアント側のサブネットマスク\t：{}".format(client_sub_bin))
+# print(server_sub_bin.count('1'))
+# print(client_sub_bin.count('1'))
+
+# 疎通確認
+
+if (equal_ip >= server_sub) and (equal_ip >= client_sub):
+        print("\nPingが通ります！！！\n")
+
+else:
+    print("\nPingが通りません！！！\n")
 
 
 
-
-# サブネットマスクの確認
-# i = 0
-# server_sub_bin = 0
-# while i <= 4:
-#   server_sub_bin = bin(bin(server_sub_bin) | bin(int(server_sub_arr[i])<<8))
-#   print(server_sub_bin)
-#   i += 1
