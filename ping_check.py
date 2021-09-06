@@ -48,17 +48,40 @@ elif int(224 < server_ip_arr[0]):
 i = 0
 server_sub_bin = ""
 client_sub_bin = ""
+
+ip_comp_arr = ""
 while i <= 3:
-    server_sub_bin += bin(int(server_sub_arr[i]))
-    client_sub_bin += bin(int(client_sub_arr[i]))
+    server_sub_bin += format(int(server_sub_arr[i]),'08b')
+    client_sub_bin += format(int(client_sub_arr[i]),'08b')
+    # server_sub_bin += bin(int(server_sub_arr[i]))
+    # client_sub_bin += bin(int(client_sub_arr[i]))
+
+    print(int(server_ip_arr[i]) ^ int(client_ip_arr[i]))
+
+    # IPアドレスをビット演算で比較
+    ip_comp = int(server_ip_arr[i]) ^ int(client_ip_arr[i])
+
+    if 0 == (int(server_ip_arr[i]) ^ int(client_ip_arr[i])):
+        ip_comp_arr += format(ip_comp,'08b')
+        print("ok")
+    else:
+        ip_comp_arr += format(ip_comp,'08b')
+        print("ng")
+        print(ip_comp)
+        
+
+        print(format(ip_comp,'08b'))
+        # print('{0:08d}'.format(str(bin(ip_comp))))
+        # print('{0:08d}'.format(str(bin(ip_comp))).find('1'))
     i += 1
 
 
-
+print(ip_comp_arr)
 print(server_sub_bin)
 print(client_sub_bin)
 print(server_sub_bin.count('1'))
 print(client_sub_bin.count('1'))
+
 
 
 
