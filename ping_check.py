@@ -59,25 +59,37 @@ while not input_check:
             ip_comp_bin += format(ip_comp,'08b')
             i += 1
 
-
-
-        # 疎通確認処理
         # 文字列の先頭から find('') 内の文字が何番目に出現するか
         server_sub = server_sub_bin.find('0')
         client_sub = client_sub_bin.find('0')
         equal_ip = ip_comp_bin.find('1')
 
-        # IPアドレスの先頭からの共通の桁数がサブネットマスクの範囲以上か？
-        if (equal_ip >= server_sub) and (equal_ip >= client_sub):
+        # 入力されたサブネットマスクは有効か？
+        sub_check = False
+        if 1 <= server_sub and server_sub <= 32:
+            sub_check = True
+        else:
+            sub_check = False
+        
+
+
+
+        # 疎通確認処理
+
+        # IPアドレスのネットワーク部は共通　かつ　サブネットマスクは正しいか？
+        if (equal_ip >= server_sub) and (equal_ip >= client_sub) and sub_check:
                 print("\n\n\033[33mPingが通ります！！！\033[0m\n")
 
         else:
             print("\n\n\033[31mPingが通りません！！！\033[0m\n")
             
-            if int(server_sub) or int(client_sub) == 0 :
-               print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n") 
-            elif int(server_sub) or int(client_sub) > 32 :
-               print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n") 
+            if (int(server_sub) == 0) or (int(client_sub) == 0) :
+                print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n") 
+            elif (int(server_sub) > 32) or (int(client_sub) > 30) :
+                print("\n\n\033[31mサブネットマスクが無効です。\033[0m\n")
+            else:
+                print("\n\n\033[31mネットワークが違います。\033[0m\n")
+                
 
         input_check = True
 
@@ -90,14 +102,18 @@ while not input_check:
 
 # 補足情報表示
 print("\n")
-print(ip_comp_bin)
-print("IPアドレスは先頭から{}番目まで等しいです。".format(ip_comp_bin.find('1')))
-print("サーバのサブネットマスクは/{}です。".format(server_sub_bin.find('0')))
-print("クライアントのサブネットマスクは/{}です。".format(client_sub_bin.find('0')))
+
+if int(equal_ip) == -1:
+    print("IPアドレスは全て等しいです。")
+else:
+    print("IPアドレスは先頭から{}番目まで等しいです。".format(equal_ip))
+    
+print("サーバのサブネットマスクは/{}です。".format(server_sub))
+print("クライアントのサブネットマスクは/{}です。".format(client_sub))
 
 print("\n")
 
-print("サーバ側のIPアドレス\t\t\t：{}".format(server_ip_bin))
-print("クライアント側のIPアドレス\t\t：{}".format(client_ip_bin))
-print("サーバ側のサブネットマスク\t\t：{}".format(server_sub_bin))
+print("サーバ側のIPアドレス\t\t\t：\033[36m{}\033[0m{}".format(server_ip_bin[:int(server_sub)],server_ip_bin[int(server_sub):]))
+print("サーバ側のサブネットマスク\t\t：{}\n".format(server_sub_bin))
+print("クライアント側のIPアドレス\t\t：\033[36m{}\033[0m{}".format(client_ip_bin[:int(client_sub)],client_ip_bin[int(client_sub):]))
 print("クライアント側のサブネットマスク\t：{}".format(client_sub_bin))
