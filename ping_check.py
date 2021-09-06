@@ -1,9 +1,8 @@
 # input処理
-print("サーバ側のIPアドレス、サブネットマスクを入力して下さい")
 print("入力例：192.168.111.111 255.255.255.0")
+print("サーバ側のIPアドレス、サブネットマスクを入力して下さい")
 server = input()
 print("クライアント側のIPアドレス、サブネットマスクを入力して下さい")
-print("入力例：192.168.111.111 255.255.255.0")
 client = input()
 
 def house_arr(server,client):
@@ -28,10 +27,10 @@ server_sub_arr = house_arr(server,client)[1]
 client_ip_arr = house_arr(server,client)[2]
 client_sub_arr = house_arr(server,client)[3]
 
-print(server_ip_arr)
-print(server_sub_arr)
-print(client_ip_arr)
-print(client_sub_arr)
+# print(server_ip_arr)
+# print(server_sub_arr)
+# print(client_ip_arr)
+# print(client_sub_arr)
 
 if int(server_ip_arr[0]) <= 127:
   print("サーバ側はクラスAのIPアドレスです")
@@ -44,6 +43,22 @@ elif int(server_ip_arr[0]) <= 223:
 
 elif int(224 < server_ip_arr[0]):
   print("サーバ側はクラスC以上のIPアドレスです")
+
+# サブネットマスクを二進数に変換
+i = 0
+server_sub_bin = ""
+client_sub_bin = ""
+while i <= 3:
+    server_sub_bin += bin(int(server_sub_arr[i]))
+    client_sub_bin += bin(int(client_sub_arr[i]))
+    i += 1
+
+
+
+print(server_sub_bin)
+print(client_sub_bin)
+print(server_sub_bin.count('1'))
+print(client_sub_bin.count('1'))
 
 
 
