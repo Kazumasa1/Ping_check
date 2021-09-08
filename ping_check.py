@@ -1,26 +1,54 @@
-# inputされたIPアドレスとサブネットマスクを配列に格納する処理
-def house_arr(server,client):
-  server_arr = server.split(' ')
-  server_ip = server_arr[0]
-  server_sub = server_arr[1]
-  server_ip_arr = server_ip.split('.')
-  server_sub_arr = server_sub.split('.')
-
-  client_arr = client.split(' ')
-  client_ip = client_arr[0]
-  client_sub = client_arr[1]
-  client_ip_arr = client_ip.split('.')
-  client_sub_arr = client_sub.split('.')
-
-  return server_ip_arr, server_sub_arr, client_ip_arr, client_sub_arr
-
-
-
 # 入力されたIPアドレスとサブネットマスクが無効の場合の例外処理
 class IPError(Exception):
     pass
 class SubnetError(Exception):
     pass
+
+def cidr_converter(cidr):
+    subnet = ""
+    if 0 <= int(cidr) and int(cidr) <= 31:
+            subnet += '255.' * (int(cidr) // 8) \
+                        + str(int('1' * (int(cidr) % 8) + '0' * (8 - int(cidr) % 8),2)) \
+                        + '.0' * (3 - int(cidr) // 8)
+    else:
+        raise SubnetError()
+
+    return subnet
+
+# inputされたIPアドレスとサブネットマスクを配列に格納する処理
+def house_arr(server,client):
+    if server.count('/') == 1:
+        server_arr = server.split('/')
+        server_ip = server_arr[0]
+        server_ip_arr = server_ip.split('.')
+        server_sub = cidr_converter(server_arr[1])
+        server_sub_arr = server_sub.split('.')
+    else:
+        server_arr = server.split(' ')
+        server_ip = server_arr[0]
+        server_sub = server_arr[1]
+        server_ip_arr = server_ip.split('.')
+        server_sub_arr = server_sub.split('.')
+
+    if client.count('/') == 1:
+        client_arr = client.split('/')
+        client_ip = client_arr[0]
+        client_ip_arr = client_ip.split('.')
+
+        client_sub = cidr_converter(client_arr[1])
+
+        client_sub_arr = client_sub.split('.')
+    else:
+        client_arr = client.split(' ')
+        client_ip = client_arr[0]
+        client_sub = client_arr[1]
+        client_ip_arr = client_ip.split('.')
+        client_sub_arr = client_sub.split('.')
+
+    return server_ip_arr, server_sub_arr, client_ip_arr, client_sub_arr
+
+
+
 
 
 
@@ -71,6 +99,9 @@ while not input_check:
             ip_comp_bin += format(ip_comp,'08b')
             i += 1
 
+        print(server_sub_bin)
+        print(client_sub_bin)
+
         # 文字列の先頭から find('') 内の文字が何番目に出現するか
         server_sub = server_sub_bin.find('0')
         client_sub = client_sub_bin.find('0')
@@ -102,6 +133,7 @@ while not input_check:
     # -------------------------例外処理-------------------------
     except ValueError:
         print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
+        print("ValueError")
         input_check = False
     except IndexError:
         print("\n\n\033[31m入力に誤りがあります！！！！！\033[0m\n\n")
@@ -115,13 +147,6 @@ while not input_check:
         print("\n\n\033[31mIPアドレスが無効です。\033[0m\n")
         input_check = False
 
-
-# IPアドレスのネットワーク部を10進数、ドット区切りで格納
-# server_view_server = server_ip_bin[:int(server_sub)]
-# print(server_sub // 8)
-# server_view_server = ""
-# server_net = server_ip_bin[:int(server_sub)]
-# client_net = client_ip_bin[:int(client_sub)]
 
 def view_ip_int(ip_net,subnet):
     j = 0
@@ -145,17 +170,6 @@ def view_ip_int(ip_net,subnet):
         j += 1
 
     return view_ip_str
-
-# server_net = view_ip_int(server_net, server_sub)
-# client_net = view_ip_int(client_net, client_sub)
-
-# print(server_net)
-# print(client_net)
-
-        
-# print(server_view_server)
-
-
 
 # 補足情報表示
 print("\n")
@@ -184,7 +198,7 @@ if server_view_server == server_view_client:
     print("クライアント側のネットワークアドレス\t：{}".format(server_view_client))
 else:
     print("サーバ側のネットワークアドレス\t\t：\033[31m{}\033[0m".format(server_view_server))
-    print("クライアント側のネットワークアドレス\t：\033[31m{}\033[0m".format(vserver_view_client))
+    print("クライアント側のネットワークアドレス\t：\033[31m{}\033[0m".format(server_view_client))
 
 
 print("\n\n【クライアント視点】")
