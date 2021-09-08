@@ -116,6 +116,47 @@ while not input_check:
         input_check = False
 
 
+# IPアドレスのネットワーク部を10進数、ドット区切りで格納
+# server_view_server = server_ip_bin[:int(server_sub)]
+# print(server_sub // 8)
+# server_view_server = ""
+# server_net = server_ip_bin[:int(server_sub)]
+# client_net = client_ip_bin[:int(client_sub)]
+
+def view_ip_int(ip_net,subnet):
+    j = 0
+    k = 0
+    view_ip_str = ""
+    while j <= subnet // 8:
+        if j == ((subnet // 8)):
+
+            while k < 4 - (subnet // 8):
+                if k == 3 - (subnet // 8):
+                    view_ip_str += "0"
+                else:
+                    view_ip_str += "0"
+                    view_ip_str += "."
+
+                k += 1
+        else:
+            view_ip_str += str(int(str(ip_net[8*j:8*(j+1)]),2))
+            view_ip_str += "."
+
+        j += 1
+
+    return view_ip_str
+
+# server_net = view_ip_int(server_net, server_sub)
+# client_net = view_ip_int(client_net, client_sub)
+
+# print(server_net)
+# print(client_net)
+
+        
+# print(server_view_server)
+
+
+
 # 補足情報表示
 print("\n")
 
@@ -133,3 +174,29 @@ print("サーバ側のIPアドレス\t\t\t：\033[36m{}\033[0m{}".format(server_
 print("サーバ側のサブネットマスク\t\t：{}\n".format(server_sub_bin))
 print("クライアント側のIPアドレス\t\t：\033[36m{}\033[0m{}".format(client_ip_bin[:int(client_sub)],client_ip_bin[int(client_sub):]))
 print("クライアント側のサブネットマスク\t：{}".format(client_sub_bin))
+
+print("\n\n【サーバ視点】")
+server_view_server = view_ip_int(server_ip_bin[:int(server_sub)],server_sub)
+server_view_client = view_ip_int(client_ip_bin[:int(server_sub)],server_sub)
+
+if server_view_server == server_view_client:
+    print("サーバ側のネットワークアドレス\t\t：{}".format(server_view_server))
+    print("クライアント側のネットワークアドレス\t：{}".format(server_view_client))
+else:
+    print("サーバ側のネットワークアドレス\t\t：\033[31m{}\033[0m".format(server_view_server))
+    print("クライアント側のネットワークアドレス\t：\033[31m{}\033[0m".format(vserver_view_client))
+
+
+print("\n\n【クライアント視点】")
+client_view_server = view_ip_int(server_ip_bin[:int(client_sub)],client_sub)
+client_view_client = view_ip_int(client_ip_bin[:int(client_sub)],client_sub)
+
+if client_view_server == client_view_client:
+    print("サーバ側のネットワークアドレス\t\t：{}".format(client_view_server))
+    print("クライアント側のネットワークアドレス\t：{}".format(client_view_client))
+else:
+    print("サーバ側のネットワークアドレス\t\t：\033[31m{}\033[0m".format(client_view_server))
+    print("クライアント側のネットワークアドレス\t：\033[31m{}\033[0m".format(client_view_client))
+
+
+
