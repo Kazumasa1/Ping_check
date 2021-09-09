@@ -4,6 +4,7 @@ class IPError(Exception):
 class SubnetError(Exception):
     pass
 
+# cidr形式のサブネットマスクを10進数でドット区切りに変換する関数
 def cidr_converter(cidr):
     subnet = ""
     if 0 <= int(cidr) and int(cidr) <= 31:
@@ -34,9 +35,7 @@ def house_arr(server,client):
         client_arr = client.split('/')
         client_ip = client_arr[0]
         client_ip_arr = client_ip.split('.')
-
         client_sub = cidr_converter(client_arr[1])
-
         client_sub_arr = client_sub.split('.')
     else:
         client_arr = client.split(' ')
@@ -47,8 +46,22 @@ def house_arr(server,client):
 
     return server_ip_arr, server_sub_arr, client_ip_arr, client_sub_arr
 
+# 視点別ネットワークアドレスを生成する関数
+def view_ip_int(ip_net,subnet):
+    j = 0
+    view_ip_str = ""
+    
+    while j <= subnet // 8:
+        if j == ((subnet // 8)):
+            # ホスト部のアドレスを0にする
+            view_ip_str += '0.' * (3 - (int(subnet) // 8)) + '0'
+        else:
+            # IPアドレスをスライスで取り出して10進数で文字列に追加
+            view_ip_str += str(int(str(ip_net[8*j:8*(j+1)]),2))
+            view_ip_str += '0'
+        j += 1
 
-
+    return view_ip_str
 
 
 
@@ -68,8 +81,6 @@ while not input_check:
         client_ip_arr = house_arr(server,client)[2]
         client_sub_arr = house_arr(server,client)[3]
 
-
-
         # IPアドレスとサブネットマスクの二進数を格納する文字列
         server_ip_bin = ""
         client_ip_bin = ""
@@ -78,9 +89,9 @@ while not input_check:
         # サーバ側とクライアント側のIPアドレスを２進数でXOR演算した結果を格納する文字列
         ip_comp_bin = ""
 
+
         i = 0
         while i <= 3:
-
             # 入力されたIPアドレスは有効か？
             if ( 0 <= int(server_ip_arr[i])) and ( int(server_ip_arr[i]) <= 255 ):
                 pass
@@ -99,9 +110,6 @@ while not input_check:
             ip_comp_bin += format(ip_comp,'08b')
             i += 1
 
-        print(server_sub_bin)
-        print(client_sub_bin)
-
         # 文字列の先頭から find('') 内の文字が何番目に出現するか
         server_sub = server_sub_bin.find('0')
         client_sub = client_sub_bin.find('0')
@@ -112,11 +120,6 @@ while not input_check:
             pass
         else:
             raise SubnetError()
-        
-
-
-
-        # 疎通確認処理
 
         # IPアドレスのネットワーク部は共通　かつ　サブネットマスクは正しいか？
         if (equal_ip >= server_sub) and (equal_ip >= client_sub):
@@ -148,28 +151,6 @@ while not input_check:
         input_check = False
 
 
-def view_ip_int(ip_net,subnet):
-    j = 0
-    k = 0
-    view_ip_str = ""
-    while j <= subnet // 8:
-        if j == ((subnet // 8)):
-
-            while k < 4 - (subnet // 8):
-                if k == 3 - (subnet // 8):
-                    view_ip_str += "0"
-                else:
-                    view_ip_str += "0"
-                    view_ip_str += "."
-
-                k += 1
-        else:
-            view_ip_str += str(int(str(ip_net[8*j:8*(j+1)]),2))
-            view_ip_str += "."
-
-        j += 1
-
-    return view_ip_str
 
 # 補足情報表示
 print("\n")
@@ -211,6 +192,3 @@ if client_view_server == client_view_client:
 else:
     print("サーバ側のネットワークアドレス\t\t：\033[31m{}\033[0m".format(client_view_server))
     print("クライアント側のネットワークアドレス\t：\033[31m{}\033[0m".format(client_view_client))
-
-
-
