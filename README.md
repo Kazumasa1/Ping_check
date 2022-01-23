@@ -13,11 +13,14 @@
 ## Requirement
 Python    3.9.7<br>
 
-## Installation
-
 ## Usage
+
+
 
 ## Note
 
+CIDR形式にも対応させました。
+
 ## Author
 
+- Kazumasa Hara
